@@ -7,7 +7,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SpeedController;
@@ -40,17 +39,11 @@ import frc.robot.Constants.DriveConstants;
 
 public class Drivetrain extends SubsystemBase {
 
-
-  private static final double kVoltsPerDegreePerSecond = 0.0128;
-  private static final SPI.Port kGyroPort = SPI.Port.kOnboardCS0;
-
-  private final ADXRS450_Gyro m_gyro = new ADXRS450_Gyro(kGyroPort);
-
-  // ticks per inche
+  // ticks per meter
   private final double ticksPerRev = 1024;
-  private final double wheelDiameterInches = 7.87402;
-  private final double wheelCircumfranceInches = wheelDiameterInches * Math.PI;
-  private final double ticksPerInch = ticksPerRev / wheelCircumfranceInches;
+  private final double wheelDiameterMeters = 0.2;
+  private final double wheelCircumfranceMeters = wheelDiameterMeters * Math.PI;
+  private final double ticksPerMeter = ticksPerRev / wheelCircumfranceMeters;
 
   private final SpeedController m_leftMotor;
   private final SpeedController m_rightMotor;
@@ -89,7 +82,6 @@ public class Drivetrain extends SubsystemBase {
 
     super();
 
-    m_gyro.calibrate();
     imu.calibrate();
 
     imu.setYawAxis(IMUAxis.kY);
@@ -127,19 +119,20 @@ public class Drivetrain extends SubsystemBase {
     leftFather.configOpenloopRamp(0.5); // 0.5 seconds from neutral to full output (during open-loop control)
     leftFather.configClosedloopRamp(0); // 0 disables ramping (during closed-loop control)
 
+
     // Let's name the sensors on the LiveWindow
 
     m_leftMotor = new SpeedControllerGroup(leftFather, leftSon);
     m_rightMotor = new SpeedControllerGroup(rightFather, rightSon);
     m_drive = new DifferentialDrive(m_leftMotor, m_rightMotor);
+    m_drive.setSafetyEnabled(false);
     addChild("Drive", m_drive);
-    addChild("Gyro", m_gyro);
 
     leftEncoder = new IronMechEncoder(leftFather);
     rightEncoder = new IronMechEncoder(rightFather);
 
-    leftEncoder.setDistancePerPulse(DriveConstants.INCHESPERPULSE);
-    rightEncoder.setDistancePerPulse(DriveConstants.INCHESPERPULSE);
+    leftEncoder.setDistancePerPulse(DriveConstants.METERSPERPULSE);
+    rightEncoder.setDistancePerPulse(DriveConstants.METERSPERPULSE);
 
     resetEncoders();
     m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(imu.getGyroAngleY()));
@@ -183,7 +176,6 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("roll", imu.getGyroAngleZ());
     
 
-    SmartDashboard.putNumber("angle", m_gyro.getAngle());
 
     SmartDashboard.putNumber("rightVelocity",rightEncoder.getRate());
     SmartDashboard.putNumber("leftVelocity", leftEncoder.getRate());
@@ -193,6 +185,8 @@ public class Drivetrain extends SubsystemBase {
 
   }
 
+  
+
     /**
    * Controls the left and right sides of the drive directly with voltages.
    *
@@ -200,6 +194,7 @@ public class Drivetrain extends SubsystemBase {
    * @param rightVolts the commanded right output
    */
   public void tankDriveVolts(double leftVolts, double rightVolts) {
+    System.out.println("Left: " + leftVolts +"\tRight:" + rightVolts);
     leftFather.setVoltage(leftVolts);
     rightFather.setVoltage(rightVolts);
   }
@@ -246,7 +241,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void zeroHeading() {
-    m_gyro.reset();
+    imu.reset();
   }
 
   public double getHeading() {

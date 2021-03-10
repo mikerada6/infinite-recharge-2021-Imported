@@ -7,10 +7,17 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Path;
+
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -29,6 +36,8 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
+  private Trajectory trajectory;
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -43,6 +52,25 @@ public class Robot extends TimedRobot {
     
 
     m_robotContainer = new RobotContainer();
+    
+    String path = "test";
+    String trajectoryJSON = "paths/output/solomun3.wpilib.json";
+    if(path.equals("straight"))
+    {
+    trajectoryJSON = "paths/StraightFoward.wpilib.json";
+    }
+    if(path.equals("test"))
+    {
+    trajectoryJSON = "paths/output/solomun3_test.wpilib.json";
+    }
+trajectory = new Trajectory();
+try {
+  Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
+  trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+} catch (IOException ex) {
+  DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
+}
+
   }
 
   /**
@@ -79,7 +107,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
 
     
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand(trajectory);
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {

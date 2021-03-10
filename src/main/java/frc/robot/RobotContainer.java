@@ -76,8 +76,8 @@ public class RobotContainer {
 
 
         // Configure default commands
-        m_robotDrive.setDefaultCommand(new Drive(() -> driverLeftStick.getY(Hand.kLeft),
-                () -> driverRightStick.getX(Hand.kRight), m_robotDrive));
+        m_robotDrive.setDefaultCommand(new Drive(() -> driverLeftStick.getX(Hand.kLeft),
+                () -> driverRightStick.getY(Hand.kRight), m_robotDrive));
         m_shooter.setDefaultCommand(new ReadData(m_shooter));
 
         // Configure the button bindings
@@ -109,7 +109,7 @@ public class RobotContainer {
         return autoChooser.getSelected();
     }
 
-    public Command getAutonomousCommand() {
+    public Command getAutonomousCommand(Trajectory trajectory) {
         var autoVoltageConstraint =
         new DifferentialDriveVoltageConstraint(
             new SimpleMotorFeedforward(DriveConstants.ksVolts,
@@ -118,38 +118,31 @@ public class RobotContainer {
             DriveConstants.kDriveKinematics,
             10);
 
-    // Create config for trajectory
-    TrajectoryConfig config =
-        new TrajectoryConfig(AutoConstants.kMaxSpeedMetersPerSecond,
-                             AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-            // Add kinematics to ensure max speed is actually obeyed
-            .setKinematics(DriveConstants.kDriveKinematics)
-            // Apply the voltage constraint
-            .addConstraint(autoVoltageConstraint);
+    // // Create config for trajectory
+    // TrajectoryConfig config =
+    //     new TrajectoryConfig(AutoConstants.kMaxSpeedMetersPerSecond,
+    //                          AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+    //         // Add kinematics to ensure max speed is actually obeyed
+    //         .setKinematics(DriveConstants.kDriveKinematics)
+    //         // Apply the voltage constraint
+    //         .addConstraint(autoVoltageConstraint);
 
-    // An example trajectory to follow.  All units in meters.
-    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-        // Start at the origin facing the +X direction
-        new Pose2d(0, 0, new Rotation2d(0)),
-        // Pass through these two interior waypoints, making an 's' curve path
-        List.of(
-            new Translation2d(36*2, 36*2),
-            new Translation2d(36*3, 36*3)
-        ),
-        // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(36*4, 36*4, new Rotation2d(0)),
-        // Pass config
-        config
-    );
+    // // An example trajectory to follow.  All units in meters.
+    // Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+    //     // Start at the origin facing the +X direction
+    //     new Pose2d(0, 0, new Rotation2d(0)),
+    //     // Pass through these two interior waypoints, making an 's' curve path
+    //     List.of(
+    //         new Translation2d(3, 1),
+    //         new Translation2d(-3, 3)
+    //     ),
+    //     // End 3 meters straight ahead of where we started, facing forward
+    //     new Pose2d(0, 6, new Rotation2d(0)),
+    //     // Pass config
+    //     config
+    // );
 
-    String trajectoryJSON = "paths/Unnamed.wpilib.json";
-Trajectory trajectory = new Trajectory();
-try {
-  Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
-  trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-} catch (IOException ex) {
-  DriverStation.reportError("Unable to open trajectory: " + trajectoryJSON, ex.getStackTrace());
-}
+
 
     RamseteCommand ramseteCommand = new RamseteCommand(
         trajectory,
@@ -168,7 +161,7 @@ try {
     );
 
     // Reset odometry to the starting pose of the trajectory.
-    m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
+    m_robotDrive.resetOdometry(trajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
     return ramseteCommand.andThen(() -> m_robotDrive.tankDriveVolts(0, 0));

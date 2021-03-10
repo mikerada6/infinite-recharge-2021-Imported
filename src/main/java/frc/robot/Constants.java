@@ -54,13 +54,13 @@ public final class Constants {
     // The Robot Characterization Toolsuite provides a convenient tool for obtaining these
     // values for your robot.
     public static final double ksVolts = 0.22;
-    public static final double kvVoltSecondsPerMeter = 1.98/39.3701;
-    public static final double kaVoltSecondsSquaredPerMeter = 0.2/39.3701;
+    public static final double kvVoltSecondsPerMeter = 1.98;
+    public static final double kaVoltSecondsSquaredPerMeter = 0.2;
 
     // Example value only - as above, this must be tuned for your drive!
-    public static final double kPDriveVel = 8.5;
+    public static final double kPDriveVel = 3.5;
 
-    public static final double kTrackwidthMeters = 23;
+    public static final double kTrackwidthMeters = .5842;
     public static final DifferentialDriveKinematics kDriveKinematics =
         new DifferentialDriveKinematics(kTrackwidthMeters);
 
@@ -75,18 +75,13 @@ public final class Constants {
         public static final boolean kRightEncoderReversed = true;
     
         public static final int kEncoderCPR = 4096;
-        public static final double kWheelDiameterInches = 7.5;
+        public static final double kWheelDiameterMeters = 0.1905;
 
-        public static final double INCHESPERPULSE = (kWheelDiameterInches*Math.PI)/kEncoderCPR;
+        public static final double METERSPERPULSE = (kWheelDiameterMeters*Math.PI)/kEncoderCPR;
         public static final double kEncoderDistancePerPulse =
             // Assumes the encoders are directly mounted on the wheel shafts
-            (kWheelDiameterInches * Math.PI) / (double) kEncoderCPR;
+            (kWheelDiameterMeters * Math.PI) / (double) kEncoderCPR;
 
-        public static double kMaxRPM = 5330;
-        public static double kSensorUnitsPerRotation = kEncoderCPR;
-        public static double kGearRatio=10.71;
-
-        public static double magicNumber =  (kMaxRPM  / 600) * (kSensorUnitsPerRotation / kGearRatio);
 
         public static double linearize(final double x1, final double y1, final double x2, final double y2,
         final double input) {//TODO deadzone?
@@ -139,12 +134,11 @@ public static final int lockerMotor = 6;
  }
 
       public static final class AutoConstants {
-        public static final double INCH = 1;
-        public static final double FEET = 12;
-        public static final double YARD = FEET*3;
+        public static final double CENTIMETER = 1;
+        public static final double METER = 100;
         public static final double SECON = 1;
-        public static final double kMaxSpeedMetersPerSecond = 3*39.3701;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3*39.3701;
+        public static final double kMaxSpeedMetersPerSecond = .4;
+    public static final double kMaxAccelerationMetersPerSecondSquared = .4;
     public static final double kRamseteB = 2;
     public static final double kRamseteZeta = 0.7;
 
