@@ -8,20 +8,14 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants.ShooterConstants;
-import org.apache.commons.collections4.queue.CircularFifoQueue;
-import org.apache.commons.lang3.ArrayUtils;
 /** 
  * Add your docs here.
  */
 public class Shooter extends UnifiedMotorController {
 
-    private double motorPercentage;
     private Encoder encoder;
-    private CircularFifoQueue<Double> queue = new CircularFifoQueue<>(ShooterConstants.movingAverage);
     //feeds balls into shooter
     public Shooter()
     {

@@ -75,7 +75,7 @@ public final class Constants {
         public static final boolean kRightEncoderReversed = true;
     
         public static final int kEncoderCPR = 4096;
-        public static final double kWheelDiameterMeters = 0.1905;
+        public static final double kWheelDiameterMeters = 0.1524;
 
         public static final double METERSPERPULSE = (kWheelDiameterMeters*Math.PI)/kEncoderCPR;
         public static final double kEncoderDistancePerPulse =
@@ -84,7 +84,7 @@ public final class Constants {
 
 
         public static double linearize(final double x1, final double y1, final double x2, final double y2,
-        final double input) {//TODO deadzone?
+        final double input) {
       final Double m = (y2 - y1) / (x2 - x1);
       final Double b = y1 - (-m * x1);
           return m*input+b;

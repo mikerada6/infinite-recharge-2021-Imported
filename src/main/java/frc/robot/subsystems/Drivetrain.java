@@ -7,8 +7,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.AnalogGyro;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -20,13 +18,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.analog.adis16448.frc.ADIS16448_IMU;
 import com.analog.adis16448.frc.ADIS16448_IMU.IMUAxis;
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
@@ -38,12 +32,6 @@ import frc.robot.Constants.DriveConstants;
 
 
 public class Drivetrain extends SubsystemBase {
-
-  // ticks per meter
-  private final double ticksPerRev = 1024;
-  private final double wheelDiameterMeters = 0.2;
-  private final double wheelCircumfranceMeters = wheelDiameterMeters * Math.PI;
-  private final double ticksPerMeter = ticksPerRev / wheelCircumfranceMeters;
 
   private final SpeedController m_leftMotor;
   private final SpeedController m_rightMotor;
@@ -62,11 +50,6 @@ public class Drivetrain extends SubsystemBase {
 
   private final IronMechEncoder leftEncoder;
   private final IronMechEncoder rightEncoder;
-
-  private final int leftOffset = 0;
-  private final int rightOffset = 0;
-
-  private double rightGoal;
 
   private DifferentialDriveOdometry m_odometry;
 
@@ -103,12 +86,6 @@ public class Drivetrain extends SubsystemBase {
 
     leftSon.follow(leftFather);
     rightSon.follow(rightFather);
-    // leftSon.setInverted(InvertType.FollowMaster); // match whatever leftFather is
-    // rightSon.setInverted(InvertType.FollowMaster
-    // leftSon.setInverted(InvertType.FollowMaster); // match whatever rightFather
-    // is
-    // rightSon.setInverted(InvertType.OpposeMaster); // opposite whatever
-    // rightFather is
 
     setTalon(leftFather);
     setTalon(rightFather);

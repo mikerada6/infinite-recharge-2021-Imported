@@ -9,25 +9,13 @@
 
 package frc.robot;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.List;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -40,13 +28,9 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Shooter;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.DriveConstants.AutoConstants;
-import frc.robot.commands.Climb;
 import frc.robot.commands.Drive;
-import frc.robot.commands.DriveStraight;
 import frc.robot.commands.FineDrive;
 import frc.robot.commands.ReadData;
-import frc.robot.commands.SimpleAuto;
-import frc.robot.commands.SimpleAutoWait;
 import frc.robot.commands.StopEverything;
 import frc.robot.commands.TurnOnMotor;
 import frc.robot.subsystems.Flopper;
@@ -174,74 +158,47 @@ public class RobotContainer {
      * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        //all the buttons
+        //copilot buttons
         final JoystickButton shooterOn = new JoystickButton(copilot, 1);
-        //final JoystickButton lightOn = new JoystickButton(driverLeftStick, 5);
+        final JoystickButton ekimDown = new JoystickButton(copilot, 2); 
         final JoystickButton ekimOn = new JoystickButton(copilot, 3);
-        //final JoystickButton ekimOn2 = new JoystickButton(driverRightStick, 6);
-        final JoystickButton stop = new JoystickButton(driverLeftStick, 1);
-        final JoystickButton elevatorUp = new JoystickButton(copilot, 7);
-        final JoystickButton elevatorDown = new JoystickButton(copilot, 6);
-        final JoystickButton flopperOn = new JoystickButton(driverRightStick, 1);
-        final JoystickButton ekimDown = new JoystickButton(copilot, 2);        
-        final JoystickButton ekimDown2 = new JoystickButton(driverRightStick, 4);
-        //final JoystickButton lockerButton = new JoystickButton(copilot, 6);
-        //final JoystickButton lockerButton2 = new JoystickButton(copilot, 7);
-
         final JoystickButton ekimCollector = new JoystickButton(copilot, 5);
-
-        final JoystickButton driveOneRot = new JoystickButton(copilot, 8);
-        //final JoystickButton driveRightdistance = new JoystickButton(driverRightStick, 10);       
-
+        final JoystickButton elevatorDown = new JoystickButton(copilot, 6);
+        final JoystickButton elevatorUp = new JoystickButton(copilot, 7);
+        final JoystickButton stop2 = new JoystickButton(copilot, 9);
         final JoystickButton coCollectorIn = new JoystickButton(copilot, 10);
         final JoystickButton coCollectorOut = new JoystickButton(copilot, 11);
+        
+        //driver left buttons
+        final JoystickButton stop = new JoystickButton(driverLeftStick, 1);
+        final JoystickButton shootBack = new JoystickButton(driverLeftStick, 8);
 
-        final JoystickButton stop2 = new JoystickButton(copilot, 9);
-
-        final JoystickButton activateFineDrive = new JoystickButton(driverRightStick, 2);
-        /*final JoystickButton shootBack = new JoystickButton(driverLeftStick, 8);
-        final JoystickButton collectBack = new JoystickButton(driverLeftStick, 3);*/
-
-        //final JoystickButton shooterBangBang = new JoystickButton(driverRightStick, 1);
-        //final JoystickButton auto = new JoystickButton(copilot, 11);
-
-        //final JoystickButton rad = new JoystickButton(copilot, 9);
+        //driver right buttons
+        final JoystickButton flopperOn = new JoystickButton(driverRightStick, 1);     
+        final JoystickButton activateFineDrive = new JoystickButton(driverRightStick, 2);  
 
 
 
-        //actions
+        //copilot actions
         shooterOn.toggleWhenPressed(new TurnOnMotor(m_shooter,-1));
-        ekimOn.whileHeld(new TurnOnMotor(ekimSubsystem,.5));
-        //ekimOn2.whileHeld(new TurnOnMotor(ekimSubsystem,.8));
-
-        //driveRightdistance.whenPressed(new RightGoToPos(m_robotDrive, 4156.0));
-
-        elevatorUp.whileHeld(new TurnOnMotor(elvatorSubsystem,1));
-        elevatorDown.whileHeld(new TurnOnMotor(elvatorSubsystem,-1));
-        flopperOn.whileHeld(new TurnOnMotor(flopperSubsystem,.5));
-        
         ekimDown.whileHeld(new TurnOnMotor(ekimSubsystem,-.5));
-        //lockerButton.whileHeld(new Climb(elvatorSubsystem,1));
-        //lockerButton2.whileHeld(new Climb(elvatorSubsystem,-1));
+        ekimOn.whileHeld(new TurnOnMotor(ekimSubsystem,.5));
         ekimCollector.whileHeld(new TurnOnMotor(ekimSubsystem,.5).alongWith(new TurnOnMotor(collectorSubsystem,1)));
-
-        ekimDown2.whileHeld(new TurnOnMotor(ekimSubsystem,-.8));
-        
-        //collectBack.toggleWhenPressed(new TurnOnMotor(collectorSubsystem,-.5));
-        
+        elevatorDown.whileHeld(new TurnOnMotor(elvatorSubsystem,-1));
+        elevatorUp.whileHeld(new TurnOnMotor(elvatorSubsystem,1));
         coCollectorIn.whileHeld(new TurnOnMotor(collectorSubsystem,.75));
         coCollectorOut.whileHeld(new TurnOnMotor(collectorSubsystem,-.75));
 
-        //shootBack.toggleWhenPressed(new TurnOnMotor(m_shooter,-.5));
-        //shooterBangBang.whileHeld(new BangBang(m_shooter,5000));
-        activateFineDrive.whileHeld(new FineDrive(m_robotDrive,driverRightStick));
-        //auto.whenPressed(new SimpleAuto(flopperSubsystem, m_robotDrive, m_shooter, ekimSubsystem));
+        //driver left commands
+        shootBack.toggleWhenPressed(new TurnOnMotor(m_shooter,-.5));
 
+        //driver right commands
+        flopperOn.whileHeld(new TurnOnMotor(flopperSubsystem,.5));
+        activateFineDrive.whileHeld(new FineDrive(m_robotDrive,driverRightStick));
 
         //stops
         stop.toggleWhenPressed(new StopEverything(ekimSubsystem, flopperSubsystem, elvatorSubsystem,collectorSubsystem, m_shooter ));
         stop2.toggleWhenPressed(new StopEverything(ekimSubsystem, flopperSubsystem, elvatorSubsystem,collectorSubsystem, m_shooter ));
 
-        //rad.whileHeld(new RadTest(m_robotDrive,driverRightStick));
     }
 }
